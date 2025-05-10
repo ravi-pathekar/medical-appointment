@@ -1,3 +1,6 @@
+"use client";
+
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 import React from "react";
 
@@ -14,6 +17,19 @@ const Navbar = () => {
             <Link href="/find-a-doctor" className="font-medium">
               Find a Doctor
             </Link>
+
+            <SignedIn>
+              <Link href="/appointments" className="font-medium">
+                My Appointments
+              </Link>
+                <UserButton showName />
+            </SignedIn>
+
+            <SignedOut>
+              <button className="button bg-primary-100 bg-cover">
+                <Link href="/auth/sign-in">SignIn</Link>
+              </button>
+            </SignedOut>
           </nav>
         </div>
       </div>
