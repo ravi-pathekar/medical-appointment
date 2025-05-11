@@ -2,9 +2,9 @@ import Link from "next/link";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-800 text-white">
+    <footer className="bg-gray-800 text-white mt-auto">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between py-4">
           <Link href="/" className="flex items-center">
             AppointDoc
           </Link>

@@ -4,16 +4,8 @@
 
 :root {
   --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
+  --background-start-rgb: 247, 250, 252;
   --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
 }
 
 body {
@@ -24,10 +16,133 @@ body {
       rgb(var(--background-end-rgb))
     )
     rgb(var(--background-start-rgb));
+  font-feature-settings: "ss01", "ss02", "cv01", "cv02";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+@layer base {
+  h1 {
+    @apply text-3xl font-bold leading-tight md:text-4xl;
   }
+  h2 {
+    @apply text-2xl font-bold leading-tight md:text-3xl;
+  }
+  h3 {
+    @apply text-xl font-semibold leading-tight md:text-2xl;
+  }
+  h4 {
+    @apply text-lg font-semibold leading-snug md:text-xl;
+  }
+  h5 {
+    @apply text-base font-medium leading-snug md:text-lg;
+  }
+  p {
+    @apply text-base leading-relaxed;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200;
+  }
+  .btn-primary {
+    @apply bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500;
+  }
+  .btn-secondary {
+    @apply bg-secondary-600 text-white hover:bg-secondary-700 focus:ring-secondary-500;
+  }
+  .btn-accent {
+    @apply bg-accent-500 text-white hover:bg-accent-600 focus:ring-accent-400;
+  }
+  .input {
+    @apply block w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 sm:text-sm;
+  }
+  .card {
+    @apply bg-white rounded-xl shadow-card hover:shadow-card-hover transition-shadow duration-300;
+  }
+  .time-slot {
+    @apply px-3 py-2 text-sm font-medium rounded-md border border-neutral-200 transition-all duration-200 cursor-pointer;
+  }
+  .time-slot-available {
+    @apply bg-white hover:bg-primary-50 hover:border-primary-300 hover:text-primary-700;
+  }
+  .time-slot-selected {
+    @apply bg-primary-50 border-primary-500 text-primary-700 ring-2 ring-primary-500/30;
+  }
+  .time-slot-unavailable {
+    @apply bg-neutral-50 text-neutral-400 cursor-not-allowed;
+  }
+}
+
+.slot-transition {
+  transition: transform 0.3s ease, opacity 0.3s ease, box-shadow 0.3s ease;
+}
+
+.slot-transition:hover {
+  transform: translateY(-2px);
+}
+
+.date-nav-button {
+  @apply flex items-center justify-center w-8 h-8 rounded-full hover:bg-neutral-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1 transition-colors duration-200;
+}
+
+.calendar-day {
+  @apply flex flex-col items-center justify-center w-10 h-10 rounded-full cursor-pointer transition-colors duration-200;
+}
+
+.calendar-day-selected {
+  @apply bg-primary-600 text-white;
+}
+
+.calendar-day-today {
+  @apply border-2 border-primary-500;
+}
+
+.calendar-day:hover:not(.calendar-day-selected) {
+  @apply bg-primary-50;
+}
+
+.doctor-card {
+  @apply overflow-hidden transition-all duration-300;
+}
+
+.doctor-card:hover {
+  @apply shadow-lg;
+}
+
+.doctor-search-container {
+  @apply relative;
+}
+
+.doctor-search-icon {
+  @apply absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400;
+}
+
+.doctor-search-input {
+  @apply pl-10;
+}
+
+.scroll-container {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(107, 114, 128, 0.5) rgba(229, 231, 235, 0.5);
+}
+
+.scroll-container::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scroll-container::-webkit-scrollbar-track {
+  background: rgba(229, 231, 235, 0.5);
+  border-radius: 4px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb {
+  background-color: rgba(107, 114, 128, 0.5);
+  border-radius: 4px;
+}
+
+.scroll-container::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(107, 114, 128, 0.7);
 }

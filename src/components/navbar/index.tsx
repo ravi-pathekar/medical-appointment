@@ -5,7 +5,7 @@ import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 const Navbar = () => {
   return (
-    <header className="top-0 right-0">
+    <header className="sticky top-0 right-0 z-10 bg-slate-400 p-4">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center">
