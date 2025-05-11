@@ -1,8 +1,7 @@
 "use client";
 
-import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
-import React from "react";
+import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 const Navbar = () => {
   return (
@@ -22,7 +21,7 @@ const Navbar = () => {
               <Link href="/appointments" className="font-medium">
                 My Appointments
               </Link>
-                <UserButton showName />
+              <UserButton showName />
             </SignedIn>
 
             <SignedOut>

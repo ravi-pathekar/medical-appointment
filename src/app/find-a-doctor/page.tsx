@@ -1,5 +1,4 @@
-import React from "react";
-import DoctorList from "../../components/FindADoctor/doctorsList";
+import DoctorList from "../../components/findADoctor/doctorsList";
 
 const FindADoctorPage = () => {
   return (

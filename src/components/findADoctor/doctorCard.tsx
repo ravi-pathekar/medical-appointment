@@ -1,20 +1,19 @@
 "use client";
 
-import { motion } from "framer-motion";
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 interface Doctor {
   doctor: {
     // id: string
-    name: string
-    speciality: string
-    experience: number
-    photo: string
+    name: string;
+    speciality: string;
+    experience: number;
+    photo: string;
   };
 }
 
 const doctorCard = ({ doctor }: Doctor) => {
-  console.log("🚀 ~ doctorCard ~ doctor:", doctor)
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -33,7 +32,9 @@ const doctorCard = ({ doctor }: Doctor) => {
         <div>
           <h3 className="text-xl font-semibold text-gray-900">{doctor.name}</h3>
           <p className="text-gray-600">{doctor.speciality}</p>
-          <p className="text-sm text-gray-500">{doctor.experience}+ years of experience</p>
+          <p className="text-sm text-gray-500">
+            {doctor.experience}+ years of experience
+          </p>
         </div>
       </div>
     </motion.div>

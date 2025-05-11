@@ -1,15 +1,16 @@
 "use client";
 
-import { Doctor } from "@/types/Doctors";
-import React, { useEffect, useState } from "react";
-import { doctorsDetails } from "../../constants/doctorsData";
-import DoctorCard from "./doctorCard";
+import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
+
+import DoctorCard from "./doctorCard";
+
+import { Doctor } from "../../types/Doctors";
+import { doctorsDetails } from "../../constants/doctorsData";
 
 const doctorsList = () => {
   const [doctorsData, setDoctorsData] = useState<Doctor[]>([]);
   const [filteredDoctorsData, setFilteredDoctorsData] = useState<Doctor[]>([]);
-  console.log("🚀 ~ doctorsList ~ 8 - doctorsData:", doctorsData);
   const [isLoading, setIsLoading] = useState(true);
   const [searchInput, setSearchInput] = useState("");
 
@@ -35,11 +36,8 @@ const doctorsList = () => {
   }, [doctorsData, searchInput]);
 
   const handleSearchInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.log("🚀 ~ handleSearchInput ~ e:", e);
     setSearchInput(e.target.value);
   };
-
-  console.log("🚀 ~ doctorsList ~ 21 - doctorsData:", doctorsData);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -53,7 +51,7 @@ const doctorsList = () => {
             placeholder="Search Doctors"
             value={searchInput}
             onChange={handleSearchInput}
-            className="pl-10 pr-4 py-3 w-full rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500"
+            className="pl-10 pr-4 py-3 w-full rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500 text-black"
           />
         </div>
         <div className="space-y-6">
