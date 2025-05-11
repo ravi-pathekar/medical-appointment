@@ -11,7 +11,7 @@ import DoctorsFilter from "./doctorsFilter";
 import { Doctor } from "../../types/Doctors";
 import { doctorsDetails } from "../../constants/doctorsData";
 
-const doctorsList = () => {
+const DoctorsList = () => {
   const [doctorsData, setDoctorsData] = useState<Doctor[]>([]);
   const [filteredDoctorsData, setFilteredDoctorsData] = useState<Doctor[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -125,4 +125,4 @@ const doctorsList = () => {
   );
 };
 
-export default doctorsList;
+export default DoctorsList;
