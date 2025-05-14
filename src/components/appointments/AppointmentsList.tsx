@@ -47,12 +47,16 @@ export default function AppointmentList() {
   const handleCancelAppointment = async (id: string) => {
     try {
       if (!id) return;
+      const token = await getToken({
+        template: process.env.NEXT_PUBLIC_CLERK_JWT_TEMPLATE,
+      });
       const response = await axios.patch(
         `http://localhost:5000/api/appointments/cancel-appointment/${id}`,
         {},
         {
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
           },
         }
       );
