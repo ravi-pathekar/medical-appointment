@@ -1,15 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import axios from "axios";
 import { motion } from "framer-motion";
 import { FaSearch } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 import DoctorCard from "./doctorCard";
 import SortOptions from "./sortOptions";
 import DoctorsFilter from "./doctorsFilter";
 
 import { Doctor } from "../../types/Doctors";
-import { doctorsDetails } from "../../constants/doctorsData";
+// import { doctorsDetails } from "../../constants/doctorsData";
 
 const DoctorsList = () => {
   const [doctorsData, setDoctorsData] = useState<Doctor[]>([]);
@@ -18,14 +20,30 @@ const DoctorsList = () => {
   const [searchInput, setSearchInput] = useState("");
 
   useEffect(() => {
-    try {
-      setDoctorsData(doctorsDetails);
-      setFilteredDoctorsData(doctorsDetails);
-    } catch (error) {
-      console.log("🚀 ~ useEffect ~ error:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    const fetchDoctorsDetails = async () => {
+      try {
+        const doctorsDetails = await axios.get(
+          "http://localhost:5000/api/doctors"
+        );
+        setDoctorsData(doctorsDetails.data.data);
+        setFilteredDoctorsData(doctorsDetails.data.data);
+      } catch (error) {
+        console.error(error);
+        toast.error("Something went wrong while fetching doctors details", {
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchDoctorsDetails();
   }, []);
 
   useEffect(() => {
@@ -112,11 +130,23 @@ const DoctorsList = () => {
             <div className="md:w-3/4">
               <SortOptions onSortChange={handleSort} />
 
-              <div className="space-y-6">
-                {filteredDoctorsData.map((doctor, index) => (
-                  <DoctorCard key={index} doctor={doctor} />
-                ))}
-              </div>
+              {isLoading ? (
+                <div className="flex justify-center items-center py-12">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+                </div>
+              ) : filteredDoctorsData.length > 0 ? (
+                <div className="space-y-6">
+                  {filteredDoctorsData.map((doctor, index) => (
+                    <DoctorCard key={doctor._id} doctor={doctor} />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <h3 className="text-xl font-medium text-gray-900 mb-2">
+                    No doctors found
+                  </h3>
+                </div>
+              )}
             </div>
           </div>
         </div>

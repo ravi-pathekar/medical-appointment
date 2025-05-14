@@ -93,7 +93,7 @@ export default function AppointmentCard({
                       {appointment.doctor.name}
                     </h3>
                   </Link>
-                  <p className="text-primary-600 font-medium text-gray-700">
+                  <p className="text-primary-600 font-medium">
                     {appointment.doctor.speciality}
                   </p>
                   <div className="mt-2 text-sm text-gray-600">

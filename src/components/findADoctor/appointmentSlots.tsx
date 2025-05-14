@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import DateSelector from "./dateSelector";
 import { motion } from "framer-motion";
@@ -7,16 +7,22 @@ import { FaClock } from "react-icons/fa";
 import { format, addDays } from "date-fns";
 
 import { Doctor, TimeSlot } from "../../types/Doctors";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 interface DoctorProps {
   doctor: Doctor;
 }
 
 export default function AppointmentSlots({ doctor }: DoctorProps) {
+  console.log("🚀 ~ AppointmentSlots ~ doctor:", doctor);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
+  const [timeSlotsDetails, setTimeSlotsDetails] = useState<TimeSlot[]>([]);
+  const [reason, setReason] = useState<string>("");
+  const [error, setError] = useState<string | null>(null);
 
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, getToken } = useAuth();
 
   // Get the day of the week from the selected date
   const dayOfWeek = format(selectedDate, "EEEE");
@@ -27,7 +33,7 @@ export default function AppointmentSlots({ doctor }: DoctorProps) {
   );
 
   // Filter availability for the next 7 days
-  const filteredAvailability = doctor.availability.filter((day) =>
+  const filteredAvailability = timeSlotsDetails.filter((day) =>
     next7Days.includes(day.day)
   );
 
@@ -44,6 +50,73 @@ export default function AppointmentSlots({ doctor }: DoctorProps) {
     setSelectedDate(date);
     setSelectedSlot(null);
   };
+
+  const handleBookAppointment = async () => {
+    const trimmedReason = reason.trim();
+    console.log("🚀 ~ handleBookAppointment ~ selectedDate:", selectedDate);
+
+    // Validation
+    if (!trimmedReason) {
+      setError("Reason cannot be empty.");
+      return;
+    }
+    if (trimmedReason.length > 200) {
+      setError("Reason cannot exceed 200 characters.");
+      return;
+    }
+    const token = await getToken({ template: "medical-appointment-jwt-token" });
+    console.log("🚀 ~ handleSubmit ~ token:", token);
+
+    console.log(
+      `🚀 ~ handleBookAppointment ~ format(selectedDate, "YYYY/MM/DD"):`,
+      typeof format(selectedDate, "yyyy/mm/dd")
+    );
+
+    const response = await fetch("http://localhost:5000/api/bookAppointment", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        date: format(selectedDate, "yyyy/mm/dd"),
+        slot: selectedSlot,
+        reason,
+      }),
+    });
+
+    if (response.ok) {
+      alert("Appointment booked successfully!");
+    } else {
+      alert("Failed to book appointment.");
+    }
+  };
+
+  useEffect(() => {
+    const fetchTimeSlots = async () => {
+      try {
+        const timeSlotsDetails = await axios.get(
+          `http://localhost:5000/api/time-slots/doctor/${doctor._id}`
+        );
+        setTimeSlotsDetails(timeSlotsDetails.data.data);
+      } catch (error) {
+        toast.error(
+          "Something went wrong while fetching doctor's time slots details",
+          {
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: false,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "light",
+          }
+        );
+      }
+    };
+
+    fetchTimeSlots();
+  }, []);
 
   return (
     <div className="p-6 bg-neutral-50">
@@ -110,7 +183,20 @@ export default function AppointmentSlots({ doctor }: DoctorProps) {
       {selectedSlot ? (
         isSignedIn ? (
           <div className="text-center">
-            <button className="btn btn-accent px-8 py-3 text-white bg-primary-500 hover:bg-primary-600 transition-colors">
+            <textarea
+              className="w-full border p-2 rounded mb-4"
+              placeholder="Enter the reason for your appointment (max 200 characters)"
+              value={reason}
+              onChange={(e) => {
+                setReason(e.target.value);
+                setError("");
+              }}
+            />
+            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+            <button
+              onClick={handleBookAppointment}
+              className="btn btn-accent px-8 py-3 text-white bg-primary-500 hover:bg-primary-600 transition-colors"
+            >
               Book Appointment
             </button>
           </div>

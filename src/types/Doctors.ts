@@ -10,6 +10,7 @@ export interface Availability {
 }
 
 export interface Doctor {
+  _id: string;
   name: string;
   speciality: string;
   qualifications: string[];

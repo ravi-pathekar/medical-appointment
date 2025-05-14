@@ -25,8 +25,8 @@ const Navbar = () => {
             </SignedIn>
 
             <SignedOut>
-              <button className="button bg-primary-100 bg-cover">
-                <Link href="/auth/sign-in">SignIn</Link>
+              <button className="button bg-cover">
+                <Link href="/auth/sign-in">Sign In</Link>
               </button>
             </SignedOut>
           </nav>
