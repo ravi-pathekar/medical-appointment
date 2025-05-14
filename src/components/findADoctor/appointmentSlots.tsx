@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 import Link from "next/link";
 import DateSelector from "./dateSelector";
+import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import { useAuth } from "@clerk/nextjs";
 import { FaClock } from "react-icons/fa";
 import { format, addDays } from "date-fns";
 
-import { Doctor, TimeSlot } from "../../types/Doctors";
-import axios from "axios";
-import { toast } from "react-toastify";
+import { Doctor, TimeSlot, TimeSlotsDetails } from "../../types/Doctors";
 
 interface DoctorProps {
   doctor: Doctor;
@@ -18,7 +18,7 @@ export default function AppointmentSlots({ doctor }: DoctorProps) {
   console.log("🚀 ~ AppointmentSlots ~ doctor:", doctor);
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
-  const [timeSlotsDetails, setTimeSlotsDetails] = useState<TimeSlot[]>([]);
+  const [timeSlotsDetails, setTimeSlotsDetails] = useState<TimeSlotsDetails[]>([]);
   const [reason, setReason] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
 
@@ -44,6 +44,8 @@ export default function AppointmentSlots({ doctor }: DoctorProps) {
 
   const handleSlotSelect = (slot: TimeSlot) => {
     setSelectedSlot(slot);
+    setError(null);
+    setReason("");
   };
 
   const handleDateSelect = (date: Date) => {
@@ -52,43 +54,79 @@ export default function AppointmentSlots({ doctor }: DoctorProps) {
   };
 
   const handleBookAppointment = async () => {
-    const trimmedReason = reason.trim();
-    console.log("🚀 ~ handleBookAppointment ~ selectedDate:", selectedDate);
+    try {
+      const trimmedReason = reason.trim();
+      console.log("🚀 ~ handleBookAppointment ~ selectedDate:", selectedDate);
 
-    // Validation
-    if (!trimmedReason) {
-      setError("Reason cannot be empty.");
+      // Validation
+      if (!trimmedReason) {
+        setError("Reason cannot be empty.");
+        return;
+      }
+      if (trimmedReason.length > 200) {
+        setError("Reason cannot exceed 200 characters.");
+        return;
+      }
+      const token = await getToken({
+        template: process.env.NEXT_PUBLIC_CLERK_JWT_TEMPLATE,
+      }); 
+
+      const response = await axios.post(
+        "http://localhost:5000/api/appointments",
+        {
+          doctorId: doctor._id,
+          date: format(selectedDate, "yyyy-mm-dd"),
+          day: dayOfWeek,
+          timeSlot: selectedSlot,
+          reason,
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.status === 201) {
+        setSelectedSlot(null);
+        setReason("");
+        setError(null);
+        toast.success("Appointment booked successfully!", {
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+      } else {
+        toast.error("Failed to book appointment.", {
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: false,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+        });
+        console.error("Failed to book appointment:", response);
+        setError("Failed to book appointment.");
+      }
+    } catch (error) {
+      console.error("Error booking appointment:", error);
+      toast.error("Failed to book appointment.", {
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: false,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+      });
+      setError("Failed to book appointment.");
       return;
-    }
-    if (trimmedReason.length > 200) {
-      setError("Reason cannot exceed 200 characters.");
-      return;
-    }
-    const token = await getToken({ template: "medical-appointment-jwt-token" });
-    console.log("🚀 ~ handleSubmit ~ token:", token);
-
-    console.log(
-      `🚀 ~ handleBookAppointment ~ format(selectedDate, "YYYY/MM/DD"):`,
-      typeof format(selectedDate, "yyyy/mm/dd")
-    );
-
-    const response = await fetch("http://localhost:5000/api/bookAppointment", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        date: format(selectedDate, "yyyy/mm/dd"),
-        slot: selectedSlot,
-        reason,
-      }),
-    });
-
-    if (response.ok) {
-      alert("Appointment booked successfully!");
-    } else {
-      alert("Failed to book appointment.");
     }
   };
 
@@ -116,7 +154,7 @@ export default function AppointmentSlots({ doctor }: DoctorProps) {
     };
 
     fetchTimeSlots();
-  }, []);
+  }, [doctor._id]);
 
   return (
     <div className="p-6 bg-neutral-50">

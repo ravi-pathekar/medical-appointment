@@ -4,7 +4,7 @@ export interface TimeSlot {
   isAvailable: boolean;
 }
 
-export interface Availability {
+export interface TimeSlotsDetails {
   day: string;
   slots: TimeSlot[];
 }
@@ -24,7 +24,6 @@ export interface Doctor {
     address: string;
     city: string;
   };
-  availability: Availability[];
   ratings: number;
   reviews: number;
 }

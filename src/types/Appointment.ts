@@ -7,7 +7,7 @@ export interface Doctor {
   // _id: string
   name: string;
   speciality: string;
-  image: string;
+  photo: string;
   location: {
     hospital: string;
     city: string;
@@ -20,7 +20,7 @@ export interface Appointment {
   timeSlot: TimeSlot;
   reason: string;
   status: string;
-  doctor: Doctor;
+  doctorId: Doctor;
   createdAt: string;
   updatedAt: string;
 }

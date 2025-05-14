@@ -4,7 +4,7 @@ import Image from "next/image";
 export default function Home() {
   return (
     <div>
-      <section className="bg-gradient-to-b from-primary-50 to-white py-16 lg:py-24">
+      <section className="bg-gradient-to-b from-primary-500 to-white py-16 lg:py-24">
         <div className="container mx-auto">
           <div className="flex flex-col lg:flex-row items-center gap-12">
             <div className="lg:w-1/2">
@@ -12,12 +12,12 @@ export default function Home() {
                 Book Appointments
               </h1>
               <p className="text-lg text-gray-700 mb-8">
-                Book appointments with doctors at you convenience from home
+                Book appointments with specialist doctors online
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Link
                   href="/find-a-doctor"
-                  className="px-6 py-3 bg-primary-100 text-white rounded-lg font-medium"
+                  className="px-6 py-3 bg-primary-600 text-white rounded-lg font-medium"
                 >
                   Book Appointment
                 </Link>

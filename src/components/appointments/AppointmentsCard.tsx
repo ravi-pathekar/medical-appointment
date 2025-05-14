@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+import Image from "next/image";
 import { format, parseISO, isAfter, isSameDay } from "date-fns";
 import {
   FaCalendarAlt,
@@ -9,7 +11,6 @@ import {
 } from "react-icons/fa";
 
 import { Appointment } from "../../types/Appointment";
-import Link from "next/link";
 
 interface AppointmentCardProps {
   appointment: Appointment;
@@ -71,7 +72,7 @@ export default function AppointmentCard({
               </div>
               <div className="text-lg font-bold text-gray-900">
                 <FaClock className="inline mr-1" />
-                {appointment.timeSlot.start} - {appointment.timeSlot.end}
+                {appointment?.timeSlot?.start} - {appointment?.timeSlot?.end}
               </div>
               <div className="mt-2">{getStatusBadge()}</div>
             </div>
@@ -82,25 +83,27 @@ export default function AppointmentCard({
           <div className="flex flex-col md:flex-row md:items-start">
             <div className="md:w-2/3">
               <div className="flex items-start">
-                <img
-                  src={appointment.doctor.image}
-                  alt={appointment.doctor.name}
-                  className="w-16 h-16 object-cover rounded-full mr-4"
+                <Image
+                  src={appointment?.doctorId?.photo}
+                  alt={appointment?.doctorId?.name}
+                  height={64}
+                  width={64}
+                  className="object-cover rounded-lg mr-4"
                 />
                 <div>
                   <Link href="#">
                     <h3 className="text-lg font-bold text-gray-900">
-                      {appointment.doctor.name}
+                      {appointment?.doctorId?.name}
                     </h3>
                   </Link>
                   <p className="text-primary-600 font-medium">
-                    {appointment.doctor.speciality}
+                    {appointment?.doctorId?.speciality}
                   </p>
                   <div className="mt-2 text-sm text-gray-600">
                     <div className="flex items-center mb-1">
                       <FaMapMarkerAlt className="mr-1" />
-                      {appointment.doctor.location.hospital},{" "}
-                      {appointment.doctor.location.city}
+                      {appointment?.doctorId?.location?.hospital},{" "}
+                      {appointment?.doctorId?.location?.city}
                     </div>
                   </div>
                 </div>
@@ -111,7 +114,7 @@ export default function AppointmentCard({
                   <FaNotesMedical className="mr-1" />
                   Reason for Visit:
                 </h4>
-                <p className="text-gray-600 mt-1">{appointment.reason}</p>
+                <p className="text-gray-600 mt-1">{appointment?.reason}</p>
               </div>
             </div>
 
@@ -125,7 +128,8 @@ export default function AppointmentCard({
                 </button>
               )}
 
-              {appointment.status === "completed" && (
+              {/* View Prescription functionality not implemented */}
+              {appointment?.status === "completed" && (
                 <a
                   href="#"
                   className="w-full md:w-auto mt-2 px-4 py-2 border border-primary-500 text-primary-500 bg-primary-50 rounded-md hover:bg-primary-100 transition-colors text-sm font-medium text-center"
@@ -134,7 +138,7 @@ export default function AppointmentCard({
                 </a>
               )}
               {/* <a
-                href={`/doctors/${appointment.doctor}`}
+                href={`/doctors/${appointment?.doctor}`}
                 className="w-full md:w-auto mt-2 px-4 py-2 border border-primary-500 text-primary-500 bg-primary-50 rounded-md hover:bg-primary-100 transition-colors text-sm font-medium text-center"
               >
                 View Doctor

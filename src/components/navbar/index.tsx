@@ -5,7 +5,7 @@ import { SignedIn, SignedOut, UserButton } from "@clerk/nextjs";
 
 const Navbar = () => {
   return (
-    <header className="sticky top-0 right-0 z-10 bg-slate-400 p-4">
+    <header className="sticky top-0 right-0 z-10 bg-primary-400 p-4">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between">
           <Link href="/" className="flex items-center">
@@ -27,6 +27,9 @@ const Navbar = () => {
             <SignedOut>
               <button className="button bg-cover">
                 <Link href="/auth/sign-in">Sign In</Link>
+              </button>
+              <button className="button bg-cover">
+                <Link href="/auth/sign-up">Sign Up</Link>
               </button>
             </SignedOut>
           </nav>

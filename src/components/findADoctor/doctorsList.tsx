@@ -5,13 +5,13 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import { FaSearch } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { useAuth } from "@clerk/nextjs";
 
 import DoctorCard from "./doctorCard";
 import SortOptions from "./sortOptions";
 import DoctorsFilter from "./doctorsFilter";
 
 import { Doctor } from "../../types/Doctors";
-// import { doctorsDetails } from "../../constants/doctorsData";
 
 const DoctorsList = () => {
   const [doctorsData, setDoctorsData] = useState<Doctor[]>([]);
@@ -19,9 +19,12 @@ const DoctorsList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchInput, setSearchInput] = useState("");
 
+  const { getToken } = useAuth();
+
   useEffect(() => {
     const fetchDoctorsDetails = async () => {
       try {
+        const token = await getToken({ template: process.env.NEXT_PUBLIC_CLERK_JWT_TEMPLATE });
         const doctorsDetails = await axios.get(
           "http://localhost:5000/api/doctors"
         );
