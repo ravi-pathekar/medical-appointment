@@ -75,7 +75,7 @@ export async function POST(req: Request) {
       } = evt.data;
 
       const createdUser = await axios.post(
-        "http://localhost:5000/api/users",
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/users`,
         {
           email: emailAddresses[0].email_address,
           firstName,
@@ -126,7 +126,7 @@ export async function POST(req: Request) {
       } = evt.data;
 
       await axios.patch(
-        `http://localhost:5000/api/users/${mongoId}`,
+        `${process.env.NEXT_PUBLIC_API_BASE_URL}/users/${mongoId}`,
         {
           firstName,
           lastName,

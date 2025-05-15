@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import DateSelector from "./dateSelector";
-import { toast } from "react-toastify";
 import { motion } from "framer-motion";
 import { useAuth } from "@clerk/nextjs";
 import { FaClock } from "react-icons/fa";
 import { format, addDays } from "date-fns";
 
+import { showErrorToast, showSuccessToast } from "../common/toatNotification";
+
+import axiosInstance from "../../utils/axiosInstance";
 import { Doctor, TimeSlot, TimeSlotsDetails } from "../../types/Doctors";
 
 interface DoctorProps {
@@ -15,74 +16,70 @@ interface DoctorProps {
 }
 
 export default function AppointmentSlots({ doctor }: DoctorProps) {
-  console.log("🚀 ~ AppointmentSlots ~ doctor:", doctor);
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const [selectedDate, setSelectedDate] = useState<Date>(addDays(new Date(), 1));
   const [selectedSlot, setSelectedSlot] = useState<TimeSlot | null>(null);
   const [timeSlotsDetails, setTimeSlotsDetails] = useState<TimeSlotsDetails[]>([]);
+  const [dayAvailability, setDaydAvailability] = useState<TimeSlotsDetails | null>(null);
+  const [dayOfWeek, setDayOfWeek] = useState<string>("");
   const [reason, setReason] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
 
   const { isSignedIn, getToken } = useAuth();
 
-  // Get the day of the week from the selected date
-  const dayOfWeek = format(selectedDate, "EEEE");
-
-  // Get the next 7 days including today
-  const next7Days = Array.from({ length: 7 }, (_, i) =>
-    format(addDays(new Date(), i), "EEEE")
+  // Get the next 7 days
+  const next7Days = useMemo(
+    () =>
+      Array.from({ length: 7 }, (_, i) =>
+        format(addDays(new Date(), i + 1), "EEEE")
+      ),
+    []
   );
 
-  // Filter availability for the next 7 days
-  const filteredAvailability = timeSlotsDetails.filter((day) =>
-    next7Days.includes(day.day)
-  );
+  const availableDates = useMemo(() => {
+    return next7Days.map((day, i) => addDays(new Date(), i + 1));
+  }, [next7Days]);
 
-  // Find availability for the selected day
-  const dayAvailability = filteredAvailability.find(
-    (day) => day.day === dayOfWeek
-  );
-
+  // Function to handle slot selected by user
   const handleSlotSelect = (slot: TimeSlot) => {
     setSelectedSlot(slot);
     setError(null);
     setReason("");
   };
 
+  //  Function to handle date change by user
   const handleDateSelect = (date: Date) => {
     setSelectedDate(date);
+    setDayOfWeek(format(date, "EEEE"));
     setSelectedSlot(null);
   };
 
   const handleBookAppointment = async () => {
     try {
       const trimmedReason = reason.trim();
-      console.log("🚀 ~ handleBookAppointment ~ selectedDate:", selectedDate);
 
       // Validation
-      if (!trimmedReason) {
-        setError("Reason cannot be empty.");
+      if (!trimmedReason || trimmedReason.length > 200) {
+        setError("Reason should not be empty and cannot exceed 200 characters");
         return;
       }
-      if (trimmedReason.length > 200) {
-        setError("Reason cannot exceed 200 characters.");
-        return;
-      }
+
+      // Getting jwt token to verify user on backend
       const token = await getToken({
         template: process.env.NEXT_PUBLIC_CLERK_JWT_TEMPLATE,
-      }); 
+      });
 
-      const response = await axios.post(
-        "http://localhost:5000/api/appointments",
+      // Calling API to book the appointment
+      const response = await axiosInstance.post(
+        "/appointments",
         {
           doctorId: doctor._id,
-          date: format(selectedDate, "yyyy-mm-dd"),
+          date: format(selectedDate, "yyyy-MM-dd"),
           day: dayOfWeek,
           timeSlot: selectedSlot,
           reason,
         },
         {
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
         }
@@ -92,40 +89,16 @@ export default function AppointmentSlots({ doctor }: DoctorProps) {
         setSelectedSlot(null);
         setReason("");
         setError(null);
-        toast.success("Appointment booked successfully!", {
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: false,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+        showSuccessToast("Appointment booked successfully!");
       } else {
-        toast.error("Failed to book appointment.", {
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: false,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
-        console.error("Failed to book appointment:", response);
-        setError("Failed to book appointment.");
+        showErrorToast("Something went wrong while booking appointment. Please try again later.");
+        console.error("Something went wrong while booking appointment:", response);
+        setError("Something went wrong while booking appointment");
       }
     } catch (error) {
       console.error("Error booking appointment:", error);
-      toast.error("Failed to book appointment.", {
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: false,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-      });
-      setError("Failed to book appointment.");
+      showErrorToast("Something went wrong while booking appointment. Please try again later.");
+      setError("Something went wrong while booking appointment");
       return;
     }
   };
@@ -133,28 +106,25 @@ export default function AppointmentSlots({ doctor }: DoctorProps) {
   useEffect(() => {
     const fetchTimeSlots = async () => {
       try {
-        const timeSlotsDetails = await axios.get(
-          `http://localhost:5000/api/time-slots/doctor/${doctor._id}`
+        const timeSlotsDetails = await axiosInstance.get(
+          `/time-slots/doctor/${doctor._id}`
         );
         setTimeSlotsDetails(timeSlotsDetails.data.data);
       } catch (error) {
-        toast.error(
-          "Something went wrong while fetching doctor's time slots details",
-          {
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: false,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "light",
-          }
-        );
+        showErrorToast("Something went wrong while fetching doctor's time slots details");
+        console.error("Something went wrong while fetching doctor's time slots details:", error);
       }
     };
 
     fetchTimeSlots();
   }, [doctor._id]);
+
+  useEffect(() => {
+    const dayAvailability = timeSlotsDetails.find(
+      (day) => day.day === dayOfWeek
+    );
+    setDaydAvailability(dayAvailability || null);
+  }, [timeSlotsDetails, dayOfWeek]);
 
   return (
     <div className="p-6 bg-neutral-50">
@@ -178,7 +148,7 @@ export default function AppointmentSlots({ doctor }: DoctorProps) {
 
       <DateSelector
         onDateSelect={handleDateSelect}
-        availableDates={next7Days.map((day, i) => addDays(new Date(), i))}
+        availableDates={availableDates}
       />
 
       <div className="mb-6">
@@ -187,8 +157,7 @@ export default function AppointmentSlots({ doctor }: DoctorProps) {
         </h3>
         {!dayAvailability ? (
           <div className="text-neutral-500 py-4">
-            No slots available for {format(selectedDate, "EEEE")}. Please select
-            another date.
+            No slots available for {format(selectedDate, "EEEE")}. Please select another date.
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
@@ -218,6 +187,11 @@ export default function AppointmentSlots({ doctor }: DoctorProps) {
         )}
       </div>
 
+      {
+        /* If user selects a slot then check if the user signed in or not
+           Based on that show the book appointment button or sign in button
+        */
+      }
       {selectedSlot ? (
         isSignedIn ? (
           <div className="text-center">
@@ -244,7 +218,7 @@ export default function AppointmentSlots({ doctor }: DoctorProps) {
               href="/auth/sign-in"
               className="btn btn-accent px-8 py-3 text-white bg-primary-500 hover:bg-primary-600 transition-colors"
             >
-              Sign In or Sign Up
+              Sign In
             </Link>
           </div>
         )

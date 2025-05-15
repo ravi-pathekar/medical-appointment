@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import axios from "axios";
 import { useAuth } from "@clerk/nextjs";
 import { parseISO, isAfter } from "date-fns";
 import { motion, AnimatePresence } from "framer-motion";
@@ -9,7 +8,9 @@ import { FaFilter, FaCalendarAlt } from "react-icons/fa";
 
 import AppointmentsCard from "./AppointmentsCard";
 
+import axiosInstance from "../../utils/axiosInstance";
 import { Appointment } from "../../types/Appointment";
+import { showErrorToast, showSuccessToast } from "../common/toatNotification";
 
 export default function AppointmentList() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -24,18 +25,18 @@ export default function AppointmentList() {
         const token = await getToken({
           template: process.env.NEXT_PUBLIC_CLERK_JWT_TEMPLATE,
         });
-        const appointmentsDetails = await axios.get(
-          "http://localhost:5000/api/appointments",
+        const appointmentsDetails = await axiosInstance.get(
+          "/appointments",
           {
             headers: {
-              "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
           }
         );
         setAppointments(appointmentsDetails.data.data);
       } catch (error) {
-        console.log("🚀 ~ fetchAppointments ~ error:", error);
+        showErrorToast("Something went wrong while fetching appointments");
+        console.error("Something went wrong while fetching appointments", error);
       } finally {
         setIsLoading(false);
       }
@@ -50,12 +51,11 @@ export default function AppointmentList() {
       const token = await getToken({
         template: process.env.NEXT_PUBLIC_CLERK_JWT_TEMPLATE,
       });
-      const response = await axios.patch(
-        `http://localhost:5000/api/appointments/cancel-appointment/${id}`,
+      const response = await axiosInstance.patch(
+        `/appointments/cancel-appointment/${id}`,
         {},
         {
           headers: {
-            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`
           },
         }
@@ -70,20 +70,21 @@ export default function AppointmentList() {
               : appointment
           )
         );
-
-        console.log("Appointment cancelled successfully");
+        showSuccessToast("Appointment cancelled successfully");
       } else {
-        console.log("Something went wrong while cancelling appointment");
+        showErrorToast("Something went wrong while cancelling appointment");
+        console.error("Something went wrong while cancelling appointment", response);
       }
     } catch (error) {
-      console.log("An error occurred");
+      showErrorToast("Something went wrong while cancelling appointment");
+      console.error(error);
     }
   };
 
   const filteredAppointments = appointments.filter((appointment) => {
     if (statusFilter === "all") return true;
     if (statusFilter === "upcoming") {
-      return isAfter(parseISO(appointment.date), new Date());
+      return isAfter(parseISO(appointment.date), new Date()) && appointment.status === "upcoming";
     }
     return appointment.status === statusFilter;
   });

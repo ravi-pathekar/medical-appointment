@@ -1,17 +1,17 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { motion } from "framer-motion";
 import { FaSearch } from "react-icons/fa";
-import { toast } from "react-toastify";
-import { useAuth } from "@clerk/nextjs";
 
 import DoctorCard from "./doctorCard";
 import SortOptions from "./sortOptions";
 import DoctorsFilter from "./doctorsFilter";
 
+import { showErrorToast } from "../common/toatNotification";
+
 import { Doctor } from "../../types/Doctors";
+import axiosInstance from "@/utils/axiosInstance";
 
 const DoctorsList = () => {
   const [doctorsData, setDoctorsData] = useState<Doctor[]>([]);
@@ -19,28 +19,17 @@ const DoctorsList = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchInput, setSearchInput] = useState("");
 
-  const { getToken } = useAuth();
-
   useEffect(() => {
     const fetchDoctorsDetails = async () => {
       try {
-        const token = await getToken({ template: process.env.NEXT_PUBLIC_CLERK_JWT_TEMPLATE });
-        const doctorsDetails = await axios.get(
-          "http://localhost:5000/api/doctors"
+        const doctorsDetails = await axiosInstance.get(
+          "/doctors"
         );
         setDoctorsData(doctorsDetails.data.data);
         setFilteredDoctorsData(doctorsDetails.data.data);
       } catch (error) {
         console.error(error);
-        toast.error("Something went wrong while fetching doctors details", {
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: false,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "light",
-        });
+        showErrorToast("Something went wrong while fetching doctors details");
       } finally {
         setIsLoading(false);
       }
