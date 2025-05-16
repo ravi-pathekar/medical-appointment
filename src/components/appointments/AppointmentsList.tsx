@@ -63,7 +63,6 @@ export default function AppointmentList() {
           },
         }
       );
-      console.log("🚀 ~ handleCancelAppointment ~ response:", response.status)
 
       if (response.status === 200) {
         // Update the appointments list

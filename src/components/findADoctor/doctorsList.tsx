@@ -26,7 +26,6 @@ const DoctorsList = () => {
         const doctorsDetails = await axios.get(
           "/api/doctors"
         );
-        console.log("🚀 ~ fetchDoctorsDetails ~ doctorsDetails:", doctorsDetails)
         setDoctorsData(doctorsDetails.data.data);
         setFilteredDoctorsData(doctorsDetails.data.data);
       } catch (error) {
