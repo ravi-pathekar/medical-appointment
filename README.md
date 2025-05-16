@@ -2,7 +2,16 @@ This is a medical appointment scheduling system web application. You can find do
 
 ## Getting Started
 
-First, run the development server:
+First, install the dependencies
+
+```bash
+yarn
+```
+
+Add environment variables mentioned in `.env.example` file
+
+
+run the development server:
 
 ```bash
 npm run dev
@@ -10,7 +19,6 @@ npm run dev
 yarn dev
 ```
 
-Add environment variables mentioned in `.env.example` file
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
@@ -55,3 +63,8 @@ Initially, I used Github for version control and now pushing it to bitbucket.
 ## Deploy on Vercel
 
 This application is deployed on vercel.
+
+
+## Consideration
+
+UTo get dummy data, used AI platforms, like ChatGPT and also for color shades in the tailwind.config file. 
