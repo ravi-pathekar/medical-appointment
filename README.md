@@ -1,5 +1,7 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+This is a medical appointment scheduling system web application. You can find doctors and schedule an appointment online.
+
 ## Getting Started
 
 First, run the development server:
@@ -14,23 +16,48 @@ pnpm dev
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Add environment variables mentioned in `.env.example` file
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+On the home page user have `Book Appointment`, `Sign In`, `Sign Up` buttons.
 
-## Learn More
+Click on `Book Appointment` or `Find a Doctor` button, user will be redirected to "/find-a-doctor" page.
 
-To learn more about Next.js, take a look at the following resources:
+Here user can find documents according to your disease.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+There is also "/appointments" page which is a protected route. You need to sign in or sign up to view your appointments.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+User can see upcoming, cancelled and completed appointments on this page.
+
+User also have option to cancel any upcoming appointments.
+
+
+## Architecture
+
+This application is based upon Next.js 14.
+
+Used [Clerk](https://clerk.com/) for user sign in and sign up as it provides inbuilt sign in, sign up form, social login, webhook integration and sdk for backend as well.
+
+Used `date-fns` to manage date related tasks, like displaying dates and days to book slots.
+
+Used `framer-motion` to build smooth interface.
+
+
+## Inspiration
+
+For the design part, I took inspiration from [Apollo Hospitals](https://www.apollohospitals.com/doctors) website.
+
+## Limitations
+
+I have added filter doctors component but functionality is not working as of now. Will work on that.
+
+Added API routes later as I deployed backend on AWS EC2 and it was running on "http". So, to call the APIs added API routes.
+Note: It is just a workaround for now. When I will add ssl certificate and setup nginx or caddy, can remove API routes and directly call the APIs.
+
+Initially I used Github for version control and now pushing it to bitbucket.
+
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+This application is deployed on vercel.
