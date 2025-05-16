@@ -10,6 +10,7 @@ import { showErrorToast, showSuccessToast } from "../common/toatNotification";
 
 import axiosInstance from "../../utils/axiosInstance";
 import { Doctor, TimeSlot, TimeSlotsDetails } from "../../types/Doctors";
+import axios from "axios";
 
 interface DoctorProps {
   doctor: Doctor;
@@ -69,8 +70,8 @@ export default function AppointmentSlots({ doctor }: DoctorProps) {
       });
 
       // Calling API to book the appointment
-      const response = await axiosInstance.post(
-        "/appointments",
+      const response = await axios.post(
+        "/api/appointments/book-appointment",
         {
           doctorId: doctor._id,
           date: format(selectedDate, "yyyy-MM-dd"),
@@ -80,7 +81,7 @@ export default function AppointmentSlots({ doctor }: DoctorProps) {
         },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            token,
           },
         }
       );
@@ -106,8 +107,8 @@ export default function AppointmentSlots({ doctor }: DoctorProps) {
   useEffect(() => {
     const fetchTimeSlots = async () => {
       try {
-        const timeSlotsDetails = await axiosInstance.get(
-          `/time-slots/doctor/${doctor._id}`
+        const timeSlotsDetails = await axios.get(
+          `/api/doctors/time-slots/${doctor._id}`
         );
         setTimeSlotsDetails(timeSlotsDetails.data.data);
       } catch (error) {
