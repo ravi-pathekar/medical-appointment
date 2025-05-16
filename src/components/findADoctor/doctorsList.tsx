@@ -12,6 +12,7 @@ import { showErrorToast } from "../common/toatNotification";
 
 import { Doctor } from "../../types/Doctors";
 import axiosInstance from "@/utils/axiosInstance";
+import axios from "axios";
 
 const DoctorsList = () => {
   const [doctorsData, setDoctorsData] = useState<Doctor[]>([]);
@@ -22,9 +23,10 @@ const DoctorsList = () => {
   useEffect(() => {
     const fetchDoctorsDetails = async () => {
       try {
-        const doctorsDetails = await axiosInstance.get(
-          "/doctors"
+        const doctorsDetails = await axios.get(
+          "/api/doctors"
         );
+        console.log("🚀 ~ fetchDoctorsDetails ~ doctorsDetails:", doctorsDetails)
         setDoctorsData(doctorsDetails.data.data);
         setFilteredDoctorsData(doctorsDetails.data.data);
       } catch (error) {
