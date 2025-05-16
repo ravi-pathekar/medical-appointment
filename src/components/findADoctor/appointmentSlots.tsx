@@ -119,7 +119,7 @@ export default function AppointmentSlots({ doctor }: DoctorProps) {
     };
 
     fetchTimeSlots();
-  }, [doctor._id]);
+  }, []);
 
   useEffect(() => {
     const dayAvailability = timeSlotsDetails.find(
