@@ -1,5 +1,3 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
 This is a medical appointment scheduling system web application. You can find doctors and schedule an appointment online.
 
 ## Getting Started
@@ -10,10 +8,6 @@ First, run the development server:
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
 Add environment variables mentioned in `.env.example` file
@@ -55,7 +49,7 @@ I have added filter doctors component but functionality is not working as of now
 Added API routes later as I deployed backend on AWS EC2 and it was running on "http". So, to call the APIs added API routes.
 Note: It is just a workaround for now. When I will add ssl certificate and setup nginx or caddy, can remove API routes and directly call the APIs.
 
-Initially I used Github for version control and now pushing it to bitbucket.
+Initially, I used Github for version control and now pushing it to bitbucket.
 
 
 ## Deploy on Vercel
