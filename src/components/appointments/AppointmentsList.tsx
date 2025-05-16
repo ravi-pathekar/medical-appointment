@@ -11,6 +11,7 @@ import AppointmentsCard from "./AppointmentsCard";
 import axiosInstance from "../../utils/axiosInstance";
 import { Appointment } from "../../types/Appointment";
 import { showErrorToast, showSuccessToast } from "../common/toatNotification";
+import axios from "axios";
 
 export default function AppointmentList() {
   const [appointments, setAppointments] = useState<Appointment[]>([]);
@@ -25,11 +26,11 @@ export default function AppointmentList() {
         const token = await getToken({
           template: process.env.NEXT_PUBLIC_CLERK_JWT_TEMPLATE,
         });
-        const appointmentsDetails = await axiosInstance.get(
-          "/appointments",
+        const appointmentsDetails = await axios.get(
+          "/api/appointments/get-appointments",
           {
             headers: {
-              Authorization: `Bearer ${token}`,
+              token,
             },
           }
         );
@@ -51,15 +52,18 @@ export default function AppointmentList() {
       const token = await getToken({
         template: process.env.NEXT_PUBLIC_CLERK_JWT_TEMPLATE,
       });
-      const response = await axiosInstance.patch(
-        `/appointments/cancel-appointment/${id}`,
-        {},
+      const response = await axios.patch(
+        `/api/appointments/cancel-appointment`,
+        {
+          id 
+        },
         {
           headers: {
-            Authorization: `Bearer ${token}`
+            token,
           },
         }
       );
+      console.log("🚀 ~ handleCancelAppointment ~ response:", response.status)
 
       if (response.status === 200) {
         // Update the appointments list
