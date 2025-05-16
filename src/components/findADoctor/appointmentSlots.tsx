@@ -86,7 +86,8 @@ export default function AppointmentSlots({ doctor }: DoctorProps) {
         }
       );
 
-      if (response.status === 201) {
+      console.log("🚀 ~ handleBookAppointment ~ response.status:", response.status)
+      if (response.status === 200) {
         setSelectedSlot(null);
         setReason("");
         setError(null);

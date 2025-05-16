@@ -7,7 +7,7 @@ export async function PATCH(req: NextRequest, res: NextResponse) {
   const { id } = reqBody;
   const token = req.headers.get("token");
   const response = await axiosInstance.patch(
-    `/cancel-appointment/${id}`,
+    `/appointments/cancel-appointment/${id}`,
     {},
     {
       headers: {
