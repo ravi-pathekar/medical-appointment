@@ -6,13 +6,11 @@ const Footer = () => {
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between py-4">
           <Link href="/" className="flex items-center">
-            AppointDoc
+            Medical Appointment
           </Link>
 
           <nav className="hidden md:flex items-center space-x-8">
-            <Link href="/find-a-doctor" className="font-medium">
-              Find a Doctor
-            </Link>
+            Footer
           </nav>
         </div>
       </div>
